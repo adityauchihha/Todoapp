@@ -16,7 +16,7 @@ import {db} from './firebase'
               });
        
        
-      setPyt("");
+      
       
           
         
