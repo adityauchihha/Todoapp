@@ -1,48 +1,114 @@
-import React, { useState } from 'react';
-import { collection, addDoc } from "firebase/firestore";
+/* import React,{useState, useEffect} from 'react'
+import { collection, addDoc, getDocs} from "firebase/firestore"; 
 import {db} from './firebase'
-   function Todo(){
-      const [pyt, setPyt] = useState('');
-      const [tasks,setTasks]=useState([]);
-      function handleChange(e){
-        setPyt(e.target.value);
-      }
-    const handleSubmit=async(e)=>{
-   
-      setTasks(t=>[...t, pyt]);
-      await addDoc(collection(db,"Todo"),{
-                things:pyt,
-                done:false
-              });
-       
-       
-      
-      
-          
-        
-       
-       
-      } 
+function Todo() {
+  const [input,setInput]=useState();
+  const [tasks, setTasks] = useState([]);
+
+//Read the document
+useEffect(()=>{
+  const getTasks=async () =>{
+  const querySnapshot = await getDocs(collection(db, "Kam"));
+querySnapshot.forEach((doc) => {
+  // doc.data() is never undefined for query doc snapshots
+  //console.log(doc.id, " => ", doc.data());
+  const dete=doc.data();
+  const idi=doc.id;
+  setTasks(t=>[...t,{id:idi, ...dete}]);
+  //setTasks(t=>[...t,{id:doc.id,task:doc.data()}]);
+});
+  }
   
+},[])
 
+    function handleChange(e){
+      setInput(e.target.value);
+    }
+    const handleClick = async()=>{
+      if(input.trim()!==""){
+        
 
-
-
-
+// Add a new document with a generated id.
+        const docRef = await addDoc(collection(db, "Kam"), {
+          kam_list:input,
+        });
       
-    return(<>
-      <div className="add-lists">
-        <input type="text" value={pyt} placeholder="Add a todo" onChange={handleChange}/>
-        <button onClick={handleSubmit}>Submit</button>
-      </div>
-      <div className='display'>
-          <ul>
-            {tasks.map((task,index)=>
-          <li key={index}>{task}</li>
-          )}
-          </ul>
-      </div>
-      </>
-    );
+
+        //setTasks(t=>[...t, input]);
+        setInput("");
+      }
+     
+    };
+  return (
+    <div className='todo'>
+        <div className="input">
+          <input value={input} placeholder='Enter a task' onChange={handleChange} />
+          <button onClick={handleClick}>Add Task</button>
+        </div>
+        <div className="display_task">
+          {tasks.map((task)=>
+        <li key={task.id}>{task}</li>
+        )}
+        </div>
+    </div>
+  )
 }
-export default Todo
+
+export default Todo */
+import React, { useState, useEffect } from 'react';
+import { collection, addDoc, getDocs } from "firebase/firestore"; 
+import { db } from './firebase';
+
+function Todo() {
+  const [input, setInput] = useState('');
+  const [tasks, setTasks] = useState([]);
+
+  // Read the document
+  useEffect(() => {
+    const getTasks = async () => {
+      const querySnapshot = await getDocs(collection(db, "Kam"));
+      const fetchedTasks = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const id = doc.id;
+        fetchedTasks.push({ id, ...data });
+      });
+      setTasks(fetchedTasks);
+    };
+  
+    getTasks();
+  }, []);
+
+  function handleChange(e) {
+    setInput(e.target.value);
+  }
+
+  const handleClick = async () => {
+    if (input.trim() !== '') {
+      // Add a new document with a generated id.
+      await addDoc(collection(db, "Kam"), {
+        kam_list: input,
+      });
+
+      setInput('');
+    }
+  };
+
+  return (
+    <div className='todo'>
+      <div className="input">
+        <input value={input} placeholder='Enter a task' onChange={handleChange} />
+        <button onClick={handleClick}>Add Task</button>
+      </div>
+      <div className="display_task">
+        <ul>
+          {tasks.map((task) => (
+            <li key={task.id}>{task.kam_list}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+export default Todo;
