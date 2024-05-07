@@ -56,7 +56,7 @@ querySnapshot.forEach((doc) => {
 
 export default Todo */
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs } from "firebase/firestore"; 
+import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore"; 
 import { db } from './firebase';
 
 function Todo() {
@@ -94,6 +94,19 @@ function Todo() {
     }
   };
 
+  const handleDelete = async (id) => {
+  const delRef= doc(db,"Kam",id)
+  deleteDoc(delRef)
+  .then(()=>{
+    console.log("The document has been deleted.")
+  })
+  .catch(error => {
+    console.log(error);
+})
+
+};
+
+
   return (
     <div className='todo'>
       <div className="input">
@@ -103,7 +116,8 @@ function Todo() {
       <div className="display_task">
         <ul>
           {tasks.map((task) => (
-            <li key={task.id}>{task.kam_list}</li>
+            <li key={task.id}>{task.kam_list} <button onClick={() => handleDelete(task.id)}>Delete</button></li>
+            
           ))}
         </ul>
       </div>
